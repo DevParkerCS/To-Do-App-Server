@@ -30,9 +30,12 @@ app.use(express.json());
 
 app.post("/todo/create", async (req, res) => {
     try {
+
+        console.log(req.body)
         const todo = await Todo.create({ title: req.body.title })
 
         return res.json({ newTodo: { ...todo.toJSON(), id: todo.id } }).end();
+
     } catch (err) {
         return res.status(500).json({ msg: err }).end()
     }
@@ -42,7 +45,6 @@ app.put("/todo/update", async (req, res) => {
     try {
         const updatedTodo = await Todo.findByIdAndUpdate(req.body.id, { $set: { isCompleted: req.body.isCompleted } })
 
-        // console.log(todo)
         if (!updatedTodo) {
             return res.status(404).json({ msg: "Unable to find user" }).end();
         }
@@ -51,6 +53,17 @@ app.put("/todo/update", async (req, res) => {
     } catch (err) {
         console.log(err)
         return res.status(500).json({ msg: err }).end()
+    }
+})
+
+app.delete('/todo/delete/:id', async (req, res) => {
+    try {
+        console.log(req.params)
+        await Todo.findByIdAndDelete(req.params.id)
+
+        return res.json({}).end()
+    } catch (err) {
+        return res.status(503).json({ msg: 'No Todo Found Or Deleted' }).end()
     }
 })
 
